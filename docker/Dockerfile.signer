@@ -1,0 +1,18 @@
+FROM mpc-base
+
+WORKDIR /workspace
+
+# src（中身にthird_partyを含む）をコピー
+COPY src /workspace/src
+
+# コンテナ内部の独立した領域でビルド
+RUN apt-get update && apt-get install -y \
+    uuid-dev \
+    # 他の依存パッケージがあればここに列挙
+    && mkdir build && \
+    cd build && \
+    cmake ../src && \
+    make -j$(nproc)
+
+# 実行バイナリにパスを通しておく（任意）
+ENV PATH="/workspace/build:${PATH}"

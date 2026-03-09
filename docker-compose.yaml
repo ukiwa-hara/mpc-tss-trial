@@ -1,0 +1,39 @@
+services:
+  party1:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.signer
+    container_name: party1
+    volumes:
+      # ソースコードは同期させるが、ビルドディレクトリ(build)はマウントから除外する
+      # これにより、ビルド生成物はコンテナ内部のファイルシステムだけで完結する
+      - ./src:/workspace/src:ro
+      - ./data:/data
+    ports:
+      - "8081:8080"
+    # ビルドは Dockerfile 側で行い、ここでは実行のみを行う
+    command: /workspace/build/mpc_server co_signer1
+
+  party2:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.signer
+    container_name: party2
+    volumes:
+      - ./src:/workspace/src:ro
+      - ./data:/data
+    ports:
+      - "8082:8080"
+    command: /workspace/build/mpc_server co_signer2
+
+  party3:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.signer
+    container_name: party3
+    volumes:
+      - ./src:/workspace/src:ro
+      - ./data:/data
+    ports:
+      - "8083:8080"
+    command: /workspace/build/mpc_server co_signer3
