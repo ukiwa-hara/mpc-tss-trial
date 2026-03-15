@@ -6,7 +6,12 @@
 #include <chrono>
 #include <set>
 
+#include "httplib.h"
+#include "json.hpp"
+
 using safeheron::multi_party_ecdsa::gg18::key_refresh::Context;
+
+using json = nlohmann::json;
 
 // 外部グローバル変数の参照
 extern std::vector<Msg> msg_buffer;
@@ -132,4 +137,18 @@ void run_refresh_logic(const std::string &party_id, const std::vector<std::strin
         ofs.close();
         std::cout << "Successfully saved new key to " << old_filename << std::endl;
     }
+
+        // Node-RED の新しいエンドポイント /mpc/result に送信
+    httplib::Client cli("host.docker.internal", 1880);
+    json result_json;
+    result_json["party_id"] = party_id;
+    result_json["status"] = "success";
+
+    auto res = cli.Post("/mpc/refresh_result", result_json.dump(), "application/json");
+
+    if (res && res->status == 200)
+    {
+        std::cout << "result sent to Node-RED successfully!" << std::endl;
+    }
+
 }
