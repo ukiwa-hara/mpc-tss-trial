@@ -22,22 +22,16 @@
         "nodes": [
             "d40f16f7825aedd9",
             "1c7af81492ab1031",
-            "d718b0ad4510cad4",
             "773c0df664613916",
-            "7b04e1688a51287a",
             "39c2e675402ac20f",
             "dbf2e6edfd4e5ad4",
             "ea942bac94d5f3fe",
-            "1b95c1a120c347e6",
             "53ef82cfe795d9ec",
             "0fdb9cdf50e5722a",
             "c1cc3aa66d91026b",
             "4beee80dacbfa634",
-            "6e4fef36890e0a8b",
-            "41e20924d406d7f2",
             "228502997ff34175",
             "1db41e29a1ad8a63",
-            "72bf3d5cae1b96e1",
             "08cb547ccb9e679f",
             "0ecf7d367d023a2a",
             "3b2a455a4cfe6e8b",
@@ -47,11 +41,26 @@
             "cc86530586bf0243",
             "3180c0847b87f801",
             "f80db642637ced35",
-            "3837fab492a2444a"
+            "3837fab492a2444a",
+            "199128b6c53fb242",
+            "f637e78e37183385",
+            "718217e28051c3cc",
+            "4ddc01f78a59cb14",
+            "d36310164f29665e",
+            "6b14a5afe2f8745d",
+            "50bfd65e2f2f1fe3",
+            "d5fc4c11dfbedb40",
+            "4d67358d87730cca",
+            "41214208254c7a48",
+            "0ee16d74d17ab2a4",
+            "0970648e6f8c167f",
+            "6971850ff3090116",
+            "6c1d081422f5ecf7",
+            "6456fc89208039cd"
         ],
         "x": 14,
         "y": 1019,
-        "w": 1152,
+        "w": 1452,
         "h": 622
     },
     {
@@ -559,7 +568,7 @@
         "y": 1100,
         "wires": [
             [
-                "6e4fef36890e0a8b"
+                "41214208254c7a48"
             ]
         ]
     },
@@ -681,7 +690,7 @@
         "y": 1180,
         "wires": [
             [
-                "72bf3d5cae1b96e1"
+                "0ee16d74d17ab2a4"
             ]
         ]
     },
@@ -711,7 +720,7 @@
         "y": 1260,
         "wires": [
             [
-                "41e20924d406d7f2"
+                "0970648e6f8c167f"
             ]
         ]
     },
@@ -741,7 +750,7 @@
         "y": 1340,
         "wires": [
             [
-                "1b95c1a120c347e6"
+                "6456fc89208039cd"
             ]
         ]
     },
@@ -761,8 +770,8 @@
         "wires": [
             [
                 "1c7af81492ab1031",
-                "d718b0ad4510cad4",
-                "773c0df664613916"
+                "773c0df664613916",
+                "6971850ff3090116"
             ]
         ]
     },
@@ -776,23 +785,6 @@
         "headers": {},
         "x": 440,
         "y": 1440,
-        "wires": []
-    },
-    {
-        "id": "7b04e1688a51287a",
-        "type": "debug",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "debug 34",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 620,
-        "y": 1480,
         "wires": []
     },
     {
@@ -860,36 +852,6 @@
         "wires": [
             [
                 "dd46d187bcb55aa3"
-            ]
-        ]
-    },
-    {
-        "id": "d718b0ad4510cad4",
-        "type": "function",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "署名検証",
-        "func": "// const elliptic = require('elliptic');\n// const crypto = require('crypto');\nconst ec = new elliptic.ec('secp256k1');\n\n// フロー変数から公開鍵を取り出す\nconst pubX = flow.get(\"pubX\");\nconst pubY = flow.get(\"pubY\");\n\nconst originalData = \"0123456789abcdef\";\n// const originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\n// const msgHash = crypto.createHash('sha256').update(originalData).digest();\nconst msgHash = originalData;\n\n// 3. 署名データと公開鍵をセット\nconst pubKey = { x: pubX, y: pubY };\nconst signature = { r: msg.payload.signature.r, s: msg.payload.signature.s };\n\ntry {\n    const key = ec.keyFromPublic(pubKey, 'hex');\n    \n    // 4. 計算したハッシュを使って署名を検証\n    const isValid = key.verify(msgHash, signature);\n    \n    msg.payload = {\n        isValid: isValid, // これが true なら「元データ」は1文字も改ざんされていない！\n        // verifiedHash: msgHash.toString('hex')\n        verifiedHash: msgHash\n    };\n} catch (e) {\n    node.error(e.message);\n}\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [
-            {
-                "var": "elliptic",
-                "module": "elliptic"
-            },
-            {
-                "var": "crypto",
-                "module": "crypto"
-            }
-        ],
-        "x": 440,
-        "y": 1480,
-        "wires": [
-            [
-                "7b04e1688a51287a"
             ]
         ]
     },
@@ -1242,123 +1204,6 @@
         ]
     },
     {
-        "id": "6e4fef36890e0a8b",
-        "type": "change",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "1 & 2",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "{\"hash\":\"0123456789abcdef\",\"participants\":[\"co_signer1\",\"co_signer2\"]}",
-                "tot": "json"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 350,
-        "y": 1120,
-        "wires": [
-            [
-                "0fdb9cdf50e5722a",
-                "c1cc3aa66d91026b"
-            ]
-        ]
-    },
-    {
-        "id": "72bf3d5cae1b96e1",
-        "type": "change",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "2 & 3",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "{\"hash\":\"0123456789abcdef\",\"participants\":[\"co_signer2\",\"co_signer3\"]}",
-                "tot": "json"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 350,
-        "y": 1200,
-        "wires": [
-            [
-                "c1cc3aa66d91026b",
-                "4beee80dacbfa634"
-            ]
-        ]
-    },
-    {
-        "id": "41e20924d406d7f2",
-        "type": "change",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "1 & 3",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "{\"hash\":\"0123456789abcdef\",\"participants\":[\"co_signer1\",\"co_signer3\"]}",
-                "tot": "json"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 350,
-        "y": 1280,
-        "wires": [
-            [
-                "0fdb9cdf50e5722a",
-                "4beee80dacbfa634"
-            ]
-        ]
-    },
-    {
-        "id": "1b95c1a120c347e6",
-        "type": "change",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "全員",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "{\"hash\":\"0123456789abcdef\",\"participants\":[\"co_signer1\",\"co_signer2\",\"co_signer3\"]}",
-                "tot": "json"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 350,
-        "y": 1360,
-        "wires": [
-            [
-                "0fdb9cdf50e5722a",
-                "c1cc3aa66d91026b",
-                "4beee80dacbfa634"
-            ]
-        ]
-    },
-    {
         "id": "7bddf774cebdf6eb",
         "type": "delay",
         "z": "78e87a53dc54c282",
@@ -1660,258 +1505,6 @@
         "reg": false,
         "x": 420,
         "y": 200,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "da99607af085ae19",
-        "type": "fd-markdown",
-        "z": "78e87a53dc54c282",
-        "g": "ef4ab775926fc4f6",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "name": "co_signer1",
-        "title": "co_signer1",
-        "popup_info": "",
-        "text": "",
-        "x": 1510,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "43d56c19a72f40f6",
-        "type": "fd-markdown",
-        "z": "78e87a53dc54c282",
-        "g": "ef4ab775926fc4f6",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "name": "co_signer2",
-        "title": "co_signer2",
-        "popup_info": "",
-        "text": "",
-        "x": 1510,
-        "y": 500,
-        "wires": []
-    },
-    {
-        "id": "36b3cab716113dc1",
-        "type": "fd-markdown",
-        "z": "78e87a53dc54c282",
-        "g": "ef4ab775926fc4f6",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "name": "co_signer3",
-        "title": "co_signer3",
-        "popup_info": "",
-        "text": "",
-        "x": 1510,
-        "y": 540,
-        "wires": []
-    },
-    {
-        "id": "9fd033057daee3f5",
-        "type": "fd-push-button",
-        "z": "78e87a53dc54c282",
-        "g": "98ca0d7de880cf3d",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "keygen開始",
-        "title": "keygen開始",
-        "popup_info": "",
-        "enabled": true,
-        "color": "red-lighten-3",
-        "output_value": "keygen start",
-        "icon": null,
-        "x": 170,
-        "y": 640,
-        "wires": [
-            [
-                "3f5fcff4e03feeec",
-                "80eef4c3e159d23c",
-                "6f9cc97481078329",
-                "085d01496ffe2681"
-            ]
-        ]
-    },
-    {
-        "id": "8587581cf97d9995",
-        "type": "fd-push-button",
-        "z": "78e87a53dc54c282",
-        "g": "f561b36c3ad24bbb",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "queuesクリア",
-        "title": "queuesクリア",
-        "popup_info": "",
-        "enabled": true,
-        "color": "green-lighten-3",
-        "output_value": "queues clear",
-        "icon": null,
-        "x": 180,
-        "y": 440,
-        "wires": [
-            [
-                "dd46d187bcb55aa3"
-            ]
-        ]
-    },
-    {
-        "id": "58f0d967d7808bb8",
-        "type": "fd-push-button",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "1と2で署名",
-        "title": "1と2で署名",
-        "popup_info": "",
-        "enabled": true,
-        "color": "orange-lighten-3",
-        "output_value": "sign start",
-        "icon": null,
-        "x": 170,
-        "y": 1140,
-        "wires": [
-            [
-                "6e4fef36890e0a8b"
-            ]
-        ]
-    },
-    {
-        "id": "f80db642637ced35",
-        "type": "fd-push-button",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "2と3で署名",
-        "title": "2と3で署名",
-        "popup_info": "",
-        "enabled": true,
-        "color": "orange-lighten-3",
-        "output_value": "sign start",
-        "icon": null,
-        "x": 170,
-        "y": 1220,
-        "wires": [
-            [
-                "72bf3d5cae1b96e1"
-            ]
-        ]
-    },
-    {
-        "id": "fe147f66fea730ba",
-        "type": "fd-push-button",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "1と3で署名",
-        "title": "1と3で署名",
-        "popup_info": "",
-        "enabled": true,
-        "color": "orange-lighten-3",
-        "output_value": "sign start",
-        "icon": null,
-        "x": 170,
-        "y": 1300,
-        "wires": [
-            [
-                "41e20924d406d7f2"
-            ]
-        ]
-    },
-    {
-        "id": "ea942bac94d5f3fe",
-        "type": "fd-push-button",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "全員で署名",
-        "title": "全員で署名",
-        "popup_info": "",
-        "enabled": true,
-        "color": "orange-lighten-3",
-        "output_value": "sign start",
-        "icon": null,
-        "x": 170,
-        "y": 1380,
-        "wires": [
-            [
-                "1b95c1a120c347e6"
-            ]
-        ]
-    },
-    {
-        "id": "254882f2d66d5671",
-        "type": "fd-simple-table",
-        "z": "78e87a53dc54c282",
-        "g": "de63834e9e784ee4",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": "7",
-        "fd_rows": "5",
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "",
-        "title": "Simple Table",
-        "popup_info": "",
-        "data": null,
-        "columns": [
-            "round",
-            "src",
-            "dest",
-            "type",
-            "data"
-        ],
-        "labels": null,
-        "align": null,
-        "click": null,
-        "sort": true,
-        "x": 1430,
-        "y": 160,
         "wires": [
             []
         ]
@@ -2227,34 +1820,6 @@
         ]
     },
     {
-        "id": "30a9f3ef2558dfb5",
-        "type": "fd-push-button",
-        "z": "78e87a53dc54c282",
-        "g": "66b98e18861aa2ce",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": 1,
-        "fd_rows": 1,
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "refresh開始",
-        "title": "refresh開始",
-        "popup_info": "",
-        "enabled": true,
-        "color": "yellow-accent-3",
-        "output_value": "refresh start",
-        "icon": null,
-        "x": 170,
-        "y": 1840,
-        "wires": [
-            [
-                "b6f0f2cd56211a4a",
-                "c697f76531ee2eea"
-            ]
-        ]
-    },
-    {
         "id": "b6f0f2cd56211a4a",
         "type": "change",
         "z": "78e87a53dc54c282",
@@ -2338,11 +1903,621 @@
         ]
     },
     {
+        "id": "f637e78e37183385",
+        "type": "http in",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "",
+        "url": "/upload",
+        "method": "post",
+        "upload": true,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 830,
+        "y": 1520,
+        "wires": [
+            [
+                "d5fc4c11dfbedb40"
+            ]
+        ]
+    },
+    {
+        "id": "718217e28051c3cc",
+        "type": "http response",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1240,
+        "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "4ddc01f78a59cb14",
+        "type": "http in",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "",
+        "url": "/upload-ui",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 840,
+        "y": 1480,
+        "wires": [
+            [
+                "199128b6c53fb242"
+            ]
+        ]
+    },
+    {
+        "id": "d36310164f29665e",
+        "type": "http response",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1240,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "50bfd65e2f2f1fe3",
+        "type": "debug",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "debug 37",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1360,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "199128b6c53fb242",
+        "type": "template",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "upload画面",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n\n<body>\n    <b>署名するファイルのアップロード</b><br>\n    <form action=\"/upload\" method=\"post\" enctype=\"multipart/form-data\">\n        <input type=\"file\" name=\"file\" />\n        <br><br>\n        <input type=\"submit\" value=\"Upload\" />\n    </form>\n</body>\n\n</html>",
+        "output": "str",
+        "x": 1030,
+        "y": 1480,
+        "wires": [
+            [
+                "d36310164f29665e"
+            ]
+        ]
+    },
+    {
+        "id": "d5fc4c11dfbedb40",
+        "type": "change",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "uploadデータをフロー変数に保存",
+        "rules": [
+            {
+                "t": "set",
+                "p": "originalData",
+                "pt": "flow",
+                "to": "req.files[0].buffer",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "originalName",
+                "pt": "flow",
+                "to": "req.files[0].originalname",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1100,
+        "y": 1520,
+        "wires": [
+            [
+                "4d67358d87730cca",
+                "50bfd65e2f2f1fe3"
+            ]
+        ]
+    },
+    {
+        "id": "4d67358d87730cca",
+        "type": "template",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "upload済画面",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n\n<body>\n<b>署名するファイルのアップロード</b><br>\nアップロード済（{{flow.originalName}}）<br>\n<br>\n<a href=\"/upload-ui\">戻る</a>\n</body>\n\n</html>",
+        "output": "str",
+        "x": 1040,
+        "y": 1580,
+        "wires": [
+            [
+                "718217e28051c3cc"
+            ]
+        ]
+    },
+    {
+        "id": "41214208254c7a48",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "1 & 2",
+        "func": "// const crypto = require('crypto');\n\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest('hex');\n\nmsg.payload = {\n    hash: msgHash,\n    participants: [\"co_signer1\", \"co_signer2\"]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "crypto",
+                "module": "crypto"
+            }
+        ],
+        "x": 350,
+        "y": 1120,
+        "wires": [
+            [
+                "0fdb9cdf50e5722a",
+                "c1cc3aa66d91026b"
+            ]
+        ]
+    },
+    {
+        "id": "0ee16d74d17ab2a4",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "2 & 3",
+        "func": "// const crypto = require('crypto');\n\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest('hex');\n\nmsg.payload = {\n    hash: msgHash,\n    participants: [\"co_signer2\", \"co_signer3\"]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "crypto",
+                "module": "crypto"
+            }
+        ],
+        "x": 350,
+        "y": 1200,
+        "wires": [
+            [
+                "c1cc3aa66d91026b",
+                "4beee80dacbfa634"
+            ]
+        ]
+    },
+    {
+        "id": "0970648e6f8c167f",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "1 & 3",
+        "func": "// const crypto = require('crypto');\n\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest('hex');\n\nmsg.payload = {\n    hash: msgHash,\n    participants: [\"co_signer1\", \"co_signer3\"]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "crypto",
+                "module": "crypto"
+            }
+        ],
+        "x": 350,
+        "y": 1280,
+        "wires": [
+            [
+                "0fdb9cdf50e5722a",
+                "4beee80dacbfa634"
+            ]
+        ]
+    },
+    {
+        "id": "6456fc89208039cd",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "全員",
+        "func": "// const crypto = require('crypto');\n\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest('hex');\n\nmsg.payload = {\n    hash: msgHash,\n    participants: [\"co_signer1\", \"co_signer2\", \"co_signer3\"]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "crypto",
+                "module": "crypto"
+            }
+        ],
+        "x": 350,
+        "y": 1360,
+        "wires": [
+            [
+                "0fdb9cdf50e5722a",
+                "c1cc3aa66d91026b",
+                "4beee80dacbfa634"
+            ]
+        ]
+    },
+    {
+        "id": "6971850ff3090116",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "署名検証",
+        "func": "// const elliptic = require('elliptic');\n// const crypto = require('crypto');\nconst ec = new elliptic.ec('secp256k1');\n\n// フロー変数から公開鍵を取り出す\nconst pubX = flow.get(\"pubX\");\nconst pubY = flow.get(\"pubY\");\n\n// const originalData = \"0123456789abcdef\";\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest();\n// const msgHash = originalData;\n\n// 3. 署名データと公開鍵をセット\nconst pubKey = { x: pubX, y: pubY };\nconst signature = { r: msg.payload.signature.r, s: msg.payload.signature.s };\n\ntry {\n    const key = ec.keyFromPublic(pubKey, 'hex');\n    \n    // 4. 計算したハッシュを使って署名を検証\n    const isValid = key.verify(msgHash, signature);\n    \n    msg.payload = {\n        isValid: isValid, // これが true なら「元データ」は1文字も改ざんされていない！\n        verifiedHash: msgHash.toString('hex')\n        // verifiedHash: msgHash\n    };\n} catch (e) {\n    node.error(e.message);\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "elliptic",
+                "module": "elliptic"
+            },
+            {
+                "var": "crypto",
+                "module": "crypto"
+            }
+        ],
+        "x": 440,
+        "y": 1480,
+        "wires": [
+            [
+                "6c1d081422f5ecf7"
+            ]
+        ]
+    },
+    {
+        "id": "6c1d081422f5ecf7",
+        "type": "debug",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "debug 39",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "6b14a5afe2f8745d",
+        "type": "fd-iframe",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "fd_container": "3c1736edec4719b4",
+        "fd_cols": "7",
+        "fd_rows": "2",
+        "fd_array": false,
+        "fd_array_max": 10,
+        "name": "upload画面",
+        "title": "upload画面",
+        "popup_info": "",
+        "url": "http://localhost:1880/upload-ui",
+        "x": 830,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "da99607af085ae19",
+        "type": "fd-markdown",
+        "z": "78e87a53dc54c282",
+        "g": "ef4ab775926fc4f6",
+        "fd_container": "07754d0209ed5794",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "name": "co_signer1",
+        "title": "co_signer1",
+        "popup_info": "",
+        "text": "",
+        "x": 1510,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "43d56c19a72f40f6",
+        "type": "fd-markdown",
+        "z": "78e87a53dc54c282",
+        "g": "ef4ab775926fc4f6",
+        "fd_container": "07754d0209ed5794",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "name": "co_signer2",
+        "title": "co_signer2",
+        "popup_info": "",
+        "text": "",
+        "x": 1510,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "36b3cab716113dc1",
+        "type": "fd-markdown",
+        "z": "78e87a53dc54c282",
+        "g": "ef4ab775926fc4f6",
+        "fd_container": "07754d0209ed5794",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "name": "co_signer3",
+        "title": "co_signer3",
+        "popup_info": "",
+        "text": "",
+        "x": 1510,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "9fd033057daee3f5",
+        "type": "fd-push-button",
+        "z": "78e87a53dc54c282",
+        "g": "98ca0d7de880cf3d",
+        "fd_container": "07754d0209ed5794",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "keygen開始",
+        "title": "keygen開始",
+        "popup_info": "",
+        "enabled": true,
+        "color": "red-lighten-3",
+        "output_value": "keygen start",
+        "icon": null,
+        "x": 170,
+        "y": 640,
+        "wires": [
+            [
+                "3f5fcff4e03feeec",
+                "80eef4c3e159d23c",
+                "6f9cc97481078329",
+                "085d01496ffe2681"
+            ]
+        ]
+    },
+    {
+        "id": "8587581cf97d9995",
+        "type": "fd-push-button",
+        "z": "78e87a53dc54c282",
+        "g": "f561b36c3ad24bbb",
+        "fd_container": "07754d0209ed5794",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "queuesクリア",
+        "title": "queuesクリア",
+        "popup_info": "",
+        "enabled": true,
+        "color": "green-lighten-3",
+        "output_value": "queues clear",
+        "icon": null,
+        "x": 180,
+        "y": 440,
+        "wires": [
+            [
+                "dd46d187bcb55aa3"
+            ]
+        ]
+    },
+    {
+        "id": "58f0d967d7808bb8",
+        "type": "fd-push-button",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "fd_container": "3c1736edec4719b4",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "1と2で署名",
+        "title": "1と2で署名",
+        "popup_info": "",
+        "enabled": true,
+        "color": "orange-lighten-3",
+        "output_value": "sign start",
+        "icon": null,
+        "x": 170,
+        "y": 1140,
+        "wires": [
+            [
+                "41214208254c7a48"
+            ]
+        ]
+    },
+    {
+        "id": "f80db642637ced35",
+        "type": "fd-push-button",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "fd_container": "3c1736edec4719b4",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "2と3で署名",
+        "title": "2と3で署名",
+        "popup_info": "",
+        "enabled": true,
+        "color": "orange-lighten-3",
+        "output_value": "sign start",
+        "icon": null,
+        "x": 170,
+        "y": 1220,
+        "wires": [
+            [
+                "0ee16d74d17ab2a4"
+            ]
+        ]
+    },
+    {
+        "id": "fe147f66fea730ba",
+        "type": "fd-push-button",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "fd_container": "3c1736edec4719b4",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "1と3で署名",
+        "title": "1と3で署名",
+        "popup_info": "",
+        "enabled": true,
+        "color": "orange-lighten-3",
+        "output_value": "sign start",
+        "icon": null,
+        "x": 170,
+        "y": 1300,
+        "wires": [
+            [
+                "0970648e6f8c167f"
+            ]
+        ]
+    },
+    {
+        "id": "ea942bac94d5f3fe",
+        "type": "fd-push-button",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "fd_container": "3c1736edec4719b4",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "全員で署名",
+        "title": "全員で署名",
+        "popup_info": "",
+        "enabled": true,
+        "color": "orange-lighten-3",
+        "output_value": "sign start",
+        "icon": null,
+        "x": 170,
+        "y": 1380,
+        "wires": [
+            [
+                "6456fc89208039cd"
+            ]
+        ]
+    },
+    {
+        "id": "30a9f3ef2558dfb5",
+        "type": "fd-push-button",
+        "z": "78e87a53dc54c282",
+        "g": "66b98e18861aa2ce",
+        "fd_container": "07754d0209ed5794",
+        "fd_cols": 1,
+        "fd_rows": 1,
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "refresh開始",
+        "title": "refresh開始",
+        "popup_info": "",
+        "enabled": true,
+        "color": "yellow-accent-3",
+        "output_value": "refresh start",
+        "icon": null,
+        "x": 170,
+        "y": 1840,
+        "wires": [
+            [
+                "b6f0f2cd56211a4a",
+                "c697f76531ee2eea"
+            ]
+        ]
+    },
+    {
+        "id": "254882f2d66d5671",
+        "type": "fd-simple-table",
+        "z": "78e87a53dc54c282",
+        "g": "de63834e9e784ee4",
+        "fd_container": "07754d0209ed5794",
+        "fd_cols": "7",
+        "fd_rows": "5",
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "",
+        "title": "Simple Table",
+        "popup_info": "",
+        "data": null,
+        "columns": [
+            "round",
+            "src",
+            "dest",
+            "type",
+            "data"
+        ],
+        "labels": null,
+        "align": null,
+        "click": null,
+        "sort": true,
+        "x": 1430,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "07754d0209ed5794",
         "type": "flexdash container",
         "name": "grid01",
         "kind": "StdGrid",
-        "fd_children": ",9fd033057daee3f5,58f0d967d7808bb8,fe147f66fea730ba,f80db642637ced35,ea942bac94d5f3fe,30a9f3ef2558dfb5,8587581cf97d9995,da99607af085ae19,43d56c19a72f40f6,36b3cab716113dc1,415b3bd72fc0467d,254882f2d66d5671",
+        "fd_children": ",9fd033057daee3f5,30a9f3ef2558dfb5,8587581cf97d9995,da99607af085ae19,43d56c19a72f40f6,36b3cab716113dc1,3c1736edec4719b4,415b3bd72fc0467d,254882f2d66d5671",
         "tab": "8bebae89ddc68f86",
         "min_cols": 1,
         "max_cols": 10,
@@ -2351,6 +2526,21 @@
         "solid": false,
         "cols": 1,
         "rows": 1
+    },
+    {
+        "id": "3c1736edec4719b4",
+        "type": "flexdash container",
+        "name": "sign_panel",
+        "kind": "Panel",
+        "fd_children": ",6b14a5afe2f8745d,ea942bac94d5f3fe,58f0d967d7808bb8,f80db642637ced35,fe147f66fea730ba",
+        "tab": "",
+        "min_cols": 1,
+        "max_cols": 20,
+        "unicast": "ignore",
+        "parent": "07754d0209ed5794",
+        "solid": true,
+        "cols": 7,
+        "rows": 2
     },
     {
         "id": "8bebae89ddc68f86",
@@ -2362,7 +2552,7 @@
         "fd": "e8f5aea52ab49500"
     },
     {
-        "id": "0f8e4e7497783c36",
+        "id": "cfd819b63e1d02cd",
         "type": "global-config",
         "env": [],
         "modules": {
