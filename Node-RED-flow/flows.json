@@ -99,7 +99,9 @@
             "70ffbb8dfb44bfaf",
             "c697f76531ee2eea",
             "30a9f3ef2558dfb5",
-            "b6f0f2cd56211a4a"
+            "b6f0f2cd56211a4a",
+            "74e75d2b79f364d8",
+            "ba8194527995c5c5"
         ],
         "x": 14,
         "y": 1819,
@@ -136,7 +138,8 @@
             "27111623fcb22ff8",
             "3e73639248c631b4",
             "a84bf8f06c21aa35",
-            "c396833a74617a24"
+            "c396833a74617a24",
+            "2da8026dd2192a75"
         ],
         "x": 10.666671752929688,
         "y": 502.3333148956299,
@@ -236,6 +239,34 @@
         "y": 19,
         "w": 852,
         "h": 462
+    },
+    {
+        "id": "548196a4e19e0f10",
+        "type": "group",
+        "z": "78e87a53dc54c282",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "86f29bc4dc7082a1",
+            "8771af06910777f8",
+            "846924abdfc526c4",
+            "80c380241c452b86",
+            "26801626187b6463",
+            "482f8021d52a1f71",
+            "33ae77327060bfbb",
+            "d64dd1ee305980a6"
+        ],
+        "x": 14,
+        "y": 2239,
+        "w": 1332,
+        "h": 269.5
     },
     {
         "id": "24878189ca533a35",
@@ -368,7 +399,7 @@
         "z": "78e87a53dc54c282",
         "g": "f561b36c3ad24bbb",
         "name": "debug 30",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -522,7 +553,8 @@
             [
                 "60381ff725c85a82",
                 "9cda50e998f05a3f",
-                "a84bf8f06c21aa35"
+                "a84bf8f06c21aa35",
+                "2da8026dd2192a75"
             ]
         ]
     },
@@ -1697,7 +1729,9 @@
         "wires": [
             [
                 "54a7ee2e49d4d72c",
-                "05965f13ce9238bb"
+                "05965f13ce9238bb",
+                "74e75d2b79f364d8",
+                "ba8194527995c5c5"
             ]
         ]
     },
@@ -2182,6 +2216,473 @@
         ]
     },
     {
+        "id": "d0c5787765ce4d7f",
+        "type": "inject",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "署名検証",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 1700,
+        "wires": [
+            [
+                "eb74f3b0c38654c1"
+            ]
+        ]
+    },
+    {
+        "id": "eb74f3b0c38654c1",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "署名検証",
+        "func": "// const elliptic = require('elliptic');\n// const crypto = require('crypto');\nconst ec = new elliptic.ec('secp256k1');\n\n// フロー変数から署名を取り出す\nconst signature_r = flow.get(\"signature_r\");\nconst signature_s = flow.get(\"signature_s\");\n\n// フロー変数から公開鍵を取り出す\nconst pubX = flow.get(\"pubX\");\nconst pubY = flow.get(\"pubY\");\n\n// const originalData = \"0123456789abcdef\";\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest();\n// const msgHash = originalData;\n\n// 3. 署名データと公開鍵をセット\nconst pubKey = { x: pubX, y: pubY };\n// const signature = { r: msg.payload.signature.r, s: msg.payload.signature.s };\nconst signature = { r: signature_r, s: signature_s };\n\ntry {\n    const key = ec.keyFromPublic(pubKey, 'hex');\n    \n    // 4. 計算したハッシュを使って署名を検証\n    const isValid = key.verify(msgHash, signature);\n    \n    msg.payload = {\n        isValid: isValid, // これが true なら「元データ」は1文字も改ざんされていない！\n        verifiedHash: msgHash.toString('hex')\n        // verifiedHash: msgHash\n    };\n} catch (e) {\n    node.error(e.message);\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "elliptic",
+                "module": "elliptic"
+            },
+            {
+                "var": "crypto",
+                "module": "crypto"
+            }
+        ],
+        "x": 440,
+        "y": 1700,
+        "wires": [
+            [
+                "842df40a404728a6",
+                "8af2ad57a22cbdae"
+            ]
+        ]
+    },
+    {
+        "id": "bd169e87f4987010",
+        "type": "change",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "signature格納",
+        "rules": [
+            {
+                "t": "set",
+                "p": "signature_r",
+                "pt": "flow",
+                "to": "payload.signature.r",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "signature_s",
+                "pt": "flow",
+                "to": "payload.signature.s",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 1640,
+        "wires": [
+            [
+                "a71579a20eeca9ee"
+            ]
+        ]
+    },
+    {
+        "id": "842df40a404728a6",
+        "type": "debug",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "debug 38",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "7ed691540aae3307",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "署名データ整形",
+        "func": "// 1. 現在の日時をフォーマット (2026-03-28 17:00:44)\nconst now = new Date();\nconst pad = (n) => n.toString().padStart(2, '0');\nconst timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;\n\nconst party_id = msg.payload.party_id;\nconst signature_r = msg.payload.signature.r;\nconst signature_s = msg.payload.signature.s;\n\n// 文字列を整形\nconst signature = `${party_id} r: ${signature_r.substring(0, 10)}..., s: ${signature_s.substring(0, 10)}...`;\n\n// 2. 1行分のログエントリーを作成\nconst logEntry = `${timestamp} ${signature}`;\n\n// 3. フロー変数から既存のログ配列を取得（なければ空配列 []）\nlet logHistory = flow.get(\"logHistory\");\nif (!Array.isArray(logHistory)) {\n    logHistory = [];\n}\n\n// 4. 新しいログを【末尾】に追加 (これにより昇順になる)\nlogHistory.push(logEntry);\n\n// 5. 20件を超えた場合、【先頭（一番古いもの）】を削除\nif (logHistory.length > 20) {\n    logHistory.shift();\n}\n\n// 6. 蓄積した配列をフロー変数に保存\nflow.set(\"logHistory\", logHistory);\n\n// 7. 表示用に改行で結合して出力\nmsg.payload = logHistory.join(\"\\n\");\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 1480,
+        "wires": [
+            [
+                "2e07524498ce16b9"
+            ]
+        ]
+    },
+    {
+        "id": "8af2ad57a22cbdae",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "検証結果変換",
+        "func": "msg.payload = msg.payload.isValid ? \"OK\" : \"NG\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 1700,
+        "wires": [
+            [
+                "4771e7833d93de37"
+            ]
+        ]
+    },
+    {
+        "id": "a71579a20eeca9ee",
+        "type": "change",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "検証結果クリア",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 680,
+        "y": 1640,
+        "wires": [
+            [
+                "4771e7833d93de37"
+            ]
+        ]
+    },
+    {
+        "id": "a84bf8f06c21aa35",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "98ca0d7de880cf3d",
+        "name": "署名データ整形",
+        "func": "// 1. 現在の日時をフォーマット (2026-03-28 17:00:44)\nconst now = new Date();\nconst pad = (n) => n.toString().padStart(2, '0');\nconst timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;\n\nconst party_id = msg.payload.party_id;\nconst pubX = msg.payload.public_key.x;\nconst pubY = msg.payload.public_key.y;\n\n// 文字列を整形\nconst pubkey = `${party_id} x: ${pubX.substring(0, 10)}..., y: ${pubY.substring(0, 10)}...`;\n\n// 2. 1行分のログエントリーを作成\nconst logEntry = `${timestamp} ${pubkey}`;\n\n// 3. フロー変数から既存のログ配列を取得（なければ空配列 []）\nlet pubkeyHistory = flow.get(\"pubkeyHistory\");\nif (!Array.isArray(pubkeyHistory)) {\n    pubkeyHistory = [];\n}\n\n// 4. 新しいログを【末尾】に追加 (これにより昇順になる)\npubkeyHistory.push(logEntry);\n\n// 5. 20件を超えた場合、【先頭（一番古いもの）】を削除\nif (pubkeyHistory.length > 20) {\n    pubkeyHistory.shift();\n}\n\n// 6. 蓄積した配列をフロー変数に保存\nflow.set(\"pubkeyHistory\", pubkeyHistory);\n\n// 7. 表示用に改行で結合して出力\nmsg.payload = pubkeyHistory.join(\"\\n\");\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 900,
+        "wires": [
+            [
+                "c396833a74617a24"
+            ]
+        ]
+    },
+    {
+        "id": "d487f54d623ab8f3",
+        "type": "inject",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "1だけで署名",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 530,
+        "y": 1080,
+        "wires": [
+            [
+                "96d5d39413cc487d"
+            ]
+        ]
+    },
+    {
+        "id": "96d5d39413cc487d",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "7ad4673449f588d3",
+        "name": "1 のみ",
+        "func": "// const crypto = require('crypto');\n\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest('hex');\n\nmsg.payload = {\n    hash: msgHash,\n    participants: [\"co_signer1\"]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "crypto",
+                "module": "crypto"
+            }
+        ],
+        "x": 710,
+        "y": 1080,
+        "wires": [
+            [
+                "0fdb9cdf50e5722a"
+            ]
+        ]
+    },
+    {
+        "id": "74e75d2b79f364d8",
+        "type": "debug",
+        "z": "78e87a53dc54c282",
+        "g": "66b98e18861aa2ce",
+        "name": "debug 39",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 240,
+        "y": 2120,
+        "wires": []
+    },
+    {
+        "id": "86f29bc4dc7082a1",
+        "type": "exec",
+        "z": "78e87a53dc54c282",
+        "g": "548196a4e19e0f10",
+        "command": "docker exec party1 md5sum /workspace/co_signer1.key",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 530,
+        "y": 2340,
+        "wires": [
+            [
+                "80c380241c452b86"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "8771af06910777f8",
+        "type": "exec",
+        "z": "78e87a53dc54c282",
+        "g": "548196a4e19e0f10",
+        "command": "docker exec party2 md5sum /workspace/co_signer2.key",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 530,
+        "y": 2400,
+        "wires": [
+            [
+                "80c380241c452b86"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "846924abdfc526c4",
+        "type": "exec",
+        "z": "78e87a53dc54c282",
+        "g": "548196a4e19e0f10",
+        "command": "docker exec party3 md5sum /workspace/co_signer3.key",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 530,
+        "y": 2460,
+        "wires": [
+            [
+                "80c380241c452b86"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "80c380241c452b86",
+        "type": "function",
+        "z": "78e87a53dc54c282",
+        "g": "548196a4e19e0f10",
+        "name": "鍵シェアのハッシュデータ整形",
+        "func": "// 1. 現在の日時をフォーマット (YYYY-MM-DD HH:mm:ss)\nconst now = new Date();\nconst pad = (n) => n.toString().padStart(2, '0');\nconst timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;\n\n// 2. md5sum の出力を整形\n// 入力例: \"2e73bfa8372bed3b971baced43a04f9c  /workspace/co_signer1.key\"\nconst rawPayload = msg.payload.trim();\nconst parts = rawPayload.split(/\\s+/);\nconst hash = parts[0] ? parts[0].substring(0, 8) : \"unknown\"; // 先頭8文字のみ抽出\nconst filePath = parts[1] ? parts[1].split('/').pop() : \"unknown\"; // ファイル名のみ抽出\n\n// 1行分のログエントリーを作成 (例: 2026-04-05 09:45:12 [co_signer1.key] Hash: 2e73bfa8...)\nconst logEntry = `${timestamp} [${filePath}] Hash: ${hash}...`;\n\n// 3. フロー変数から既存のログ配列を取得\nlet hashHistory = flow.get(\"hashHistory\") || [];\n\n// 4. 新しいログを【末尾】に追加\nhashHistory.push(logEntry);\n\n// 5. 20件を超えた場合、古いものを削除\nif (hashHistory.length > 20) {\n    hashHistory.shift();\n}\n\n// 6. フロー変数に保存\nflow.set(\"hashHistory\", hashHistory);\n\n// 7. 表示用に改行で結合して出力\nmsg.payload = hashHistory.join(\"\\n\");\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 2400,
+        "wires": [
+            [
+                "26801626187b6463"
+            ]
+        ]
+    },
+    {
+        "id": "482f8021d52a1f71",
+        "type": "link in",
+        "z": "78e87a53dc54c282",
+        "g": "548196a4e19e0f10",
+        "name": "link in 2",
+        "links": [
+            "2da8026dd2192a75",
+            "ba8194527995c5c5"
+        ],
+        "x": 105,
+        "y": 2400,
+        "wires": [
+            [
+                "33ae77327060bfbb"
+            ]
+        ]
+    },
+    {
+        "id": "2da8026dd2192a75",
+        "type": "link out",
+        "z": "78e87a53dc54c282",
+        "g": "98ca0d7de880cf3d",
+        "name": "link out 2",
+        "mode": "link",
+        "links": [
+            "482f8021d52a1f71"
+        ],
+        "x": 155,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "ba8194527995c5c5",
+        "type": "link out",
+        "z": "78e87a53dc54c282",
+        "g": "66b98e18861aa2ce",
+        "name": "link out 3",
+        "mode": "link",
+        "links": [
+            "482f8021d52a1f71"
+        ],
+        "x": 205,
+        "y": 2160,
+        "wires": []
+    },
+    {
+        "id": "33ae77327060bfbb",
+        "type": "switch",
+        "z": "78e87a53dc54c282",
+        "g": "548196a4e19e0f10",
+        "name": "",
+        "property": "payload.party_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "co_signer1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "co_signer2",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "co_signer3",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 210,
+        "y": 2400,
+        "wires": [
+            [
+                "86f29bc4dc7082a1"
+            ],
+            [
+                "8771af06910777f8"
+            ],
+            [
+                "846924abdfc526c4"
+            ]
+        ]
+    },
+    {
+        "id": "d64dd1ee305980a6",
+        "type": "comment",
+        "z": "78e87a53dc54c282",
+        "g": "548196a4e19e0f10",
+        "name": "鍵シェアのハッシュを表示",
+        "info": "",
+        "x": 150,
+        "y": 2280,
+        "wires": []
+    },
+    {
         "id": "6b14a5afe2f8745d",
         "type": "fd-iframe",
         "z": "78e87a53dc54c282",
@@ -2447,152 +2948,6 @@
         ]
     },
     {
-        "id": "254882f2d66d5671",
-        "type": "fd-simple-table",
-        "z": "78e87a53dc54c282",
-        "g": "de63834e9e784ee4",
-        "fd_container": "07754d0209ed5794",
-        "fd_cols": "7",
-        "fd_rows": "5",
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "",
-        "title": "Simple Table",
-        "popup_info": "",
-        "data": null,
-        "columns": [
-            "round",
-            "src",
-            "dest",
-            "type",
-            "data"
-        ],
-        "labels": null,
-        "align": null,
-        "click": null,
-        "sort": true,
-        "x": 1430,
-        "y": 160,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "d0c5787765ce4d7f",
-        "type": "inject",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "署名検証",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 160,
-        "y": 1700,
-        "wires": [
-            [
-                "eb74f3b0c38654c1"
-            ]
-        ]
-    },
-    {
-        "id": "eb74f3b0c38654c1",
-        "type": "function",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "署名検証",
-        "func": "// const elliptic = require('elliptic');\n// const crypto = require('crypto');\nconst ec = new elliptic.ec('secp256k1');\n\n// フロー変数から署名を取り出す\nconst signature_r = flow.get(\"signature_r\");\nconst signature_s = flow.get(\"signature_s\");\n\n// フロー変数から公開鍵を取り出す\nconst pubX = flow.get(\"pubX\");\nconst pubY = flow.get(\"pubY\");\n\n// const originalData = \"0123456789abcdef\";\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest();\n// const msgHash = originalData;\n\n// 3. 署名データと公開鍵をセット\nconst pubKey = { x: pubX, y: pubY };\n// const signature = { r: msg.payload.signature.r, s: msg.payload.signature.s };\nconst signature = { r: signature_r, s: signature_s };\n\ntry {\n    const key = ec.keyFromPublic(pubKey, 'hex');\n    \n    // 4. 計算したハッシュを使って署名を検証\n    const isValid = key.verify(msgHash, signature);\n    \n    msg.payload = {\n        isValid: isValid, // これが true なら「元データ」は1文字も改ざんされていない！\n        verifiedHash: msgHash.toString('hex')\n        // verifiedHash: msgHash\n    };\n} catch (e) {\n    node.error(e.message);\n}\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [
-            {
-                "var": "elliptic",
-                "module": "elliptic"
-            },
-            {
-                "var": "crypto",
-                "module": "crypto"
-            }
-        ],
-        "x": 440,
-        "y": 1700,
-        "wires": [
-            [
-                "842df40a404728a6",
-                "8af2ad57a22cbdae"
-            ]
-        ]
-    },
-    {
-        "id": "bd169e87f4987010",
-        "type": "change",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "signature格納",
-        "rules": [
-            {
-                "t": "set",
-                "p": "signature_r",
-                "pt": "flow",
-                "to": "payload.signature.r",
-                "tot": "msg"
-            },
-            {
-                "t": "set",
-                "p": "signature_s",
-                "pt": "flow",
-                "to": "payload.signature.s",
-                "tot": "msg"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 460,
-        "y": 1640,
-        "wires": [
-            [
-                "a71579a20eeca9ee"
-            ]
-        ]
-    },
-    {
-        "id": "842df40a404728a6",
-        "type": "debug",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "debug 38",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 660,
-        "y": 1740,
-        "wires": []
-    },
-    {
         "id": "f6045d6b5e8a9d27",
         "type": "fd-push-button",
         "z": "78e87a53dc54c282",
@@ -2616,52 +2971,6 @@
         "wires": [
             [
                 "eb74f3b0c38654c1"
-            ]
-        ]
-    },
-    {
-        "id": "2e07524498ce16b9",
-        "type": "fd-text-view",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "fd_container": "d2283aa68f0fc77c",
-        "fd_cols": "6",
-        "fd_rows": "2",
-        "fd_array": false,
-        "fd_array_max": 10,
-        "fd_output_topic": "",
-        "fd_loopback": false,
-        "name": "署名データ",
-        "title": "署名データ",
-        "popup_info": "",
-        "text": "",
-        "editable": false,
-        "wrap": false,
-        "autoscroll": true,
-        "x": 650,
-        "y": 1480,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "7ed691540aae3307",
-        "type": "function",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "署名データ整形",
-        "func": "// 1. 現在の日時をフォーマット (2026-03-28 17:00:44)\nconst now = new Date();\nconst pad = (n) => n.toString().padStart(2, '0');\nconst timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;\n\nconst party_id = msg.payload.party_id;\nconst signature_r = msg.payload.signature.r;\nconst signature_s = msg.payload.signature.s;\n\n// 文字列を整形\nconst signature = `${party_id} r: ${signature_r.substring(0, 10)}..., s: ${signature_s.substring(0, 10)}...`;\n\n// 2. 1行分のログエントリーを作成\nconst logEntry = `${timestamp} ${signature}`;\n\n// 3. フロー変数から既存のログ配列を取得（なければ空配列 []）\nlet logHistory = flow.get(\"logHistory\");\nif (!Array.isArray(logHistory)) {\n    logHistory = [];\n}\n\n// 4. 新しいログを【末尾】に追加 (これにより昇順になる)\nlogHistory.push(logEntry);\n\n// 5. 20件を超えた場合、【先頭（一番古いもの）】を削除\nif (logHistory.length > 20) {\n    logHistory.shift();\n}\n\n// 6. 蓄積した配列をフロー変数に保存\nflow.set(\"logHistory\", logHistory);\n\n// 7. 表示用に改行で結合して出力\nmsg.payload = logHistory.join(\"\\n\");\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 460,
-        "y": 1480,
-        "wires": [
-            [
-                "2e07524498ce16b9"
             ]
         ]
     },
@@ -2696,73 +3005,61 @@
         "wires": []
     },
     {
-        "id": "8af2ad57a22cbdae",
-        "type": "function",
+        "id": "254882f2d66d5671",
+        "type": "fd-simple-table",
         "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "検証結果変換",
-        "func": "msg.payload = msg.payload.isValid ? \"OK\" : \"NG\";\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 680,
-        "y": 1700,
-        "wires": [
-            [
-                "4771e7833d93de37"
-            ]
-        ]
-    },
-    {
-        "id": "a71579a20eeca9ee",
-        "type": "change",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "検証結果クリア",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "",
-                "tot": "str"
-            }
+        "g": "de63834e9e784ee4",
+        "fd_container": "07754d0209ed5794",
+        "fd_cols": "7",
+        "fd_rows": "5",
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "",
+        "title": "Simple Table",
+        "popup_info": "",
+        "data": null,
+        "columns": [
+            "round",
+            "src",
+            "dest",
+            "type",
+            "data"
         ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 680,
-        "y": 1640,
+        "labels": null,
+        "align": null,
+        "click": null,
+        "sort": true,
+        "x": 1430,
+        "y": 160,
         "wires": [
-            [
-                "4771e7833d93de37"
-            ]
+            []
         ]
     },
     {
-        "id": "a84bf8f06c21aa35",
-        "type": "function",
+        "id": "2e07524498ce16b9",
+        "type": "fd-text-view",
         "z": "78e87a53dc54c282",
-        "g": "98ca0d7de880cf3d",
-        "name": "署名データ整形",
-        "func": "// 1. 現在の日時をフォーマット (2026-03-28 17:00:44)\nconst now = new Date();\nconst pad = (n) => n.toString().padStart(2, '0');\nconst timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;\n\nconst party_id = msg.payload.party_id;\nconst pubX = msg.payload.public_key.x;\nconst pubY = msg.payload.public_key.y;\n\n// 文字列を整形\nconst pubkey = `${party_id} x: ${pubX.substring(0, 10)}..., y: ${pubY.substring(0, 10)}...`;\n\n// 2. 1行分のログエントリーを作成\nconst logEntry = `${timestamp} ${pubkey}`;\n\n// 3. フロー変数から既存のログ配列を取得（なければ空配列 []）\nlet pubkeyHistory = flow.get(\"pubkeyHistory\");\nif (!Array.isArray(pubkeyHistory)) {\n    pubkeyHistory = [];\n}\n\n// 4. 新しいログを【末尾】に追加 (これにより昇順になる)\npubkeyHistory.push(logEntry);\n\n// 5. 20件を超えた場合、【先頭（一番古いもの）】を削除\nif (pubkeyHistory.length > 20) {\n    pubkeyHistory.shift();\n}\n\n// 6. 蓄積した配列をフロー変数に保存\nflow.set(\"pubkeyHistory\", pubkeyHistory);\n\n// 7. 表示用に改行で結合して出力\nmsg.payload = pubkeyHistory.join(\"\\n\");\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 220,
-        "y": 920,
+        "g": "7ad4673449f588d3",
+        "fd_container": "d2283aa68f0fc77c",
+        "fd_cols": "6",
+        "fd_rows": "2",
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "署名データ",
+        "title": "署名データ",
+        "popup_info": "",
+        "text": "",
+        "editable": false,
+        "wrap": false,
+        "autoscroll": true,
+        "x": 650,
+        "y": 1480,
         "wires": [
-            [
-                "c396833a74617a24"
-            ]
+            []
         ]
     },
     {
@@ -2785,65 +3082,34 @@
         "wrap": false,
         "autoscroll": true,
         "x": 390,
-        "y": 920,
+        "y": 900,
         "wires": [
             []
         ]
     },
     {
-        "id": "d487f54d623ab8f3",
-        "type": "inject",
+        "id": "26801626187b6463",
+        "type": "fd-text-view",
         "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "1だけで署名",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 530,
-        "y": 1080,
+        "g": "548196a4e19e0f10",
+        "fd_container": "d2283aa68f0fc77c",
+        "fd_cols": "6",
+        "fd_rows": "2",
+        "fd_array": false,
+        "fd_array_max": 10,
+        "fd_output_topic": "",
+        "fd_loopback": false,
+        "name": "鍵シェアのハッシュ",
+        "title": "鍵シェアのハッシュ",
+        "popup_info": "",
+        "text": "",
+        "editable": false,
+        "wrap": false,
+        "autoscroll": true,
+        "x": 1220,
+        "y": 2400,
         "wires": [
-            [
-                "96d5d39413cc487d"
-            ]
-        ]
-    },
-    {
-        "id": "96d5d39413cc487d",
-        "type": "function",
-        "z": "78e87a53dc54c282",
-        "g": "7ad4673449f588d3",
-        "name": "1 のみ",
-        "func": "// const crypto = require('crypto');\n\nconst originalData = flow.get(\"originalData\");\n\n// 2. 元データのハッシュを計算する\nconst msgHash = crypto.createHash('sha256').update(originalData).digest('hex');\n\nmsg.payload = {\n    hash: msgHash,\n    participants: [\"co_signer1\"]\n};\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [
-            {
-                "var": "crypto",
-                "module": "crypto"
-            }
-        ],
-        "x": 710,
-        "y": 1080,
-        "wires": [
-            [
-                "0fdb9cdf50e5722a"
-            ]
+            []
         ]
     },
     {
@@ -2883,7 +3149,7 @@
         "name": "verify_panel",
         "title": "",
         "kind": "Panel",
-        "fd_children": ",c396833a74617a24,2e07524498ce16b9,f6045d6b5e8a9d27,4771e7833d93de37",
+        "fd_children": ",26801626187b6463,c396833a74617a24,2e07524498ce16b9,f6045d6b5e8a9d27,4771e7833d93de37",
         "tab": "",
         "min_cols": 1,
         "max_cols": 20,
@@ -2903,7 +3169,7 @@
         "fd": "e8f5aea52ab49500"
     },
     {
-        "id": "ba684eddb4f174d3",
+        "id": "a83e60d05e79e66d",
         "type": "global-config",
         "env": [],
         "modules": {
